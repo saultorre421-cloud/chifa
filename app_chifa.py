@@ -33,12 +33,19 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- CONEXIÓN A GOOGLE SHEETS ---
+# --- CONEXIÓN A GOOGLE SHEETS (CORREGIDA) ---
 def init_connection():
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-    creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', scope)
+    
+    # AQUÍ ESTÁ EL CAMBIO IMPORTANTE:
+    # Usamos st.secrets para leer la llave desde la configuración de la nube
+    # Asegúrate de que en los Secrets de Streamlit pusiste: gcp_service_account = { ... }
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(st.secrets["gcp_service_account"], scope)
+    
     client = gspread.authorize(creds)
+    
     # Abre la hoja "Pedidos Chifa"
+    # IMPORTANTE: Asegúrate de que tu hoja en Google Drive se llame EXACTAMENTE "Pedidos Chifa"
     sheet = client.open("Pedidos Chifa").sheet1
     return sheet
 
